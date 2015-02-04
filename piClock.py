@@ -5,7 +5,7 @@ import pygame
 import time
 import random
 import math
-import trellocal
+import trelloCal
 
 class piClock :
     screen = None;
@@ -42,17 +42,21 @@ class piClock :
         
         size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
         print "Framebuffer size: %d x %d" % (size[0], size[1])
+
         self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
         self.maxx = size[0]
         self.maxy = size[1]
         self.origo = (self.maxx/2, self.maxy/2)
 
         # Clear the screen to start
+        print "Clearing screen..."
         self.clear()   
         # Initialise font support
+        print "Init fonts..."
         pygame.font.init()
         # Render the screen
         pygame.display.update()
+        print "Init complete."
 
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
@@ -261,14 +265,14 @@ class piClock :
         textpos = (pos[0], pos[1]-size/2)
         self.screen.blit(surface, textpos)
 
-evs = trellocal.getEvents()
+evs = trelloCal.getEvents()
+#evs = []
 print evs
 evix = 0 
 disp = 1
 
 # Create an instance of the PyScope class
 scope = piClock()
-#for t in range(0, 600):
 while 1:
     tm = time.localtime()
     t = tm.tm_sec
@@ -296,6 +300,6 @@ while 1:
     pygame.display.update()
     time.sleep(0.1)
     if t == 0:
-        evs = trellocal.getEvents()
+        evs = trelloCal.getEvents()
 
 
