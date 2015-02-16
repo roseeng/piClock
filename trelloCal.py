@@ -10,14 +10,15 @@ from icalendar import Calendar, Event
 
 def getEvents():
 
+    success = False
     events = []
 
     try:
-        req = urllib2.Request('http://trello.com/calendar/4f799cb901dd0cdb21208b60/548d8c4cd981b9f590b4547e/90fc54e71d5253fef77d2cbe0eba270e.ics')
+        req = urllib2.Request('https://trello.com/calendar/4f799cb901dd0cdb21208b60/54bbfa544dc869463114231b/caa041a9c31c013c3baa2738f0f3a4aa.ics')
         response = urllib2.urlopen(req)
         data = response.read()
     except urllib2.URLError as ex:
-        print "URLError: {0} ".format(ex.reason)
+        print "Vi fick ett URLError: {0} ".format(ex.reason)
     else:
         cal = Calendar.from_ical(data)
 
@@ -34,8 +35,9 @@ def getEvents():
                 continue
 
             events.append(summary)
-    
-    return events
+        success = True
+
+    return success, events
 
 
 

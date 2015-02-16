@@ -265,7 +265,9 @@ class piClock :
         textpos = (pos[0], pos[1]-size/2)
         self.screen.blit(surface, textpos)
 
-evs = trelloCal.getEvents()
+success, e = trelloCal.getEvents()
+if success:
+    evs = e
 #evs = []
 print evs
 evix = 0 
@@ -300,6 +302,9 @@ while 1:
     pygame.display.update()
     time.sleep(0.1)
     if t == 0:
-        evs = trelloCal.getEvents()
+        success, e = trelloCal.getEvents()
+        if success:
+            evs = e
+
 
 
