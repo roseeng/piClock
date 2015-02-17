@@ -12,7 +12,7 @@ class GpioThread(Thread):
     def run(self):
         while True:
             tm = time.localtime()
-            if self.prevHour != tm.tm_min:
+            if self.prevHour != tm.tm_hour:
                 print "Ny timme"
                 if self.inZone(tm):
                     print "Power on"
@@ -20,12 +20,13 @@ class GpioThread(Thread):
                 else:
                     print "Power off"
                     self.hdmi.powerOff()            
-                self.prevHour = tm.tm_min
+                self.prevHour = tm.tm_hour
 
             time.sleep(4)
 
     def inZone(self, tm):
-        return tm.tm_min % 2 == 1
+        hour = tm.tm_hour
+        return (hour >= 6 and hour < 10) or (hour >= 14 and hour < 22)
         
     def cleanup(self):
         print "Resetting hdmi status"

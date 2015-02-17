@@ -6,7 +6,7 @@ import time
 import random
 import math
 import trelloCal
-import hdmiPower
+from gpioThread import GpioThread
 
 class piClock :
     screen = None;
@@ -266,6 +266,16 @@ class piClock :
         textpos = (pos[0], pos[1]-size/2)
         self.screen.blit(surface, textpos)
 
+#
+# Main program starts here
+#
+
+# Start the power manager thread
+th = GpioThread()
+th.daemon = True
+th.start()
+
+# Get a list of events to show
 success, e = trelloCal.getEvents()
 if success:
     evs = e
