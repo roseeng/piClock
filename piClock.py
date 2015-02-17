@@ -6,6 +6,7 @@ import time
 import random
 import math
 import trelloCal
+import hdmiPower
 
 class piClock :
     screen = None;
@@ -273,7 +274,6 @@ print evs
 evix = 0 
 disp = 1
 
-# Create an instance of the PyScope class
 scope = piClock()
 while 1:
     tm = time.localtime()
