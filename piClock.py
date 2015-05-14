@@ -1,12 +1,9 @@
-#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 import os
 import pygame
 import time
 import random
 import math
-import trelloCal
-from gpioThread import GpioThread
 
 class piClock :
     screen = None;
@@ -265,56 +262,3 @@ class piClock :
         size = surface.get_height()
         textpos = (pos[0], pos[1]-size/2)
         self.screen.blit(surface, textpos)
-
-#
-# Main program starts here
-#
-
-# Start the power manager thread
-th = GpioThread()
-th.daemon = True
-th.start()
-
-# Get a list of events to show
-success, e = trelloCal.getEvents()
-if success:
-    evs = e
-#evs = []
-print evs
-evix = 0 
-disp = 1
-
-scope = piClock()
-while 1:
-    tm = time.localtime()
-    t = tm.tm_sec
-#    print t
-    scope.clear_dial()
-    if t % 10 == 0:
-        if disp:
-            scope.clear()
-            scope.draw_timenum()
-            t_text = scope.get_timetext()
-            texts = [ t_text ] + evs
-            text = texts[evix]
-            print text
-            scope.draw_timetext(text)
-            evix = evix+1
-            if evix >= len(texts):
-                evix = 0
-            disp = 0
-    else:
-        disp = 1
-
-    scope.draw_dial()
-    scope.draw_hands(tm)
-    scope.draw_zone2(tm)
-    pygame.display.update()
-    time.sleep(0.1)
-    if t == 0:
-        success, e = trelloCal.getEvents()
-        if success:
-            evs = e
-
-
-
