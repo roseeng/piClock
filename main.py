@@ -9,7 +9,6 @@ from trelloCalThreaded import TrelloCalThread
 from gpioThread import GpioThread
 from piClock import piClock
 
-
 #
 # Main program starts here
 #
