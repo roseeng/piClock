@@ -7,6 +7,7 @@ import random
 import math
 from trelloCalThreaded import TrelloCalThread
 from gpioThread import GpioThread
+from tempThreaded import TempThread
 from piClock import piClock
 
 #
@@ -24,6 +25,11 @@ gpio.start()
 trello = TrelloCalThread()
 trello.daemon = True
 trello.start()
+
+# Start the thermometer thread
+termo = TempThread()
+termo.daemon = True
+termo.start()
 
 # Get a list of events to show
 success, e = trello.getEvents()
@@ -46,6 +52,10 @@ while 1:
             scope.draw_timenum()
             t_text = scope.get_timetext()
             texts = [ t_text ] + evs
+            success, t = termo.getTemp()
+            if success:
+                temp_text = 'Temp: ' + str(t) + ' C'
+                texts = [ temp_text ] + texts
             text = texts[evix]
             print text
             scope.draw_timetext(text)
