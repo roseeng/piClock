@@ -13,6 +13,7 @@ class TempThread(Thread):
         Thread.__init__(self)
         self.success = False
         self.temp = 0
+	self.errors = 0
         self.dlock = threading.Lock()
 
     def run(self):
@@ -31,18 +32,24 @@ class TempThread(Thread):
         success = False
         temp = 0
 
-        print "fetching..."
+        print "fetching Temp..."
         try:
-            req = urllib2.Request('http://kronos:8080/json.htm?type=devices&rid=23')
+            req = urllib2.Request('http://kronos:8081/json.htm?type=devices&rid=23')
             data = json.load( urllib2.urlopen(req))
 
     	except urllib2.URLError as ex:
-            print "Vi fick ett URLError: {0} ".format(ex.reason)
+	    self.errors = self.errors + 1
+	    msg = str(ex.reason)
+	    unicode_str = msg.decode("windows-1252")
+	    temp = unicode_str.encode("windows-1252")
+
+            print "Vi fick ett URLError: {0} ".format(temp)
     	else:
+	    self.errors = 0
             temp = data.get('result')[0].get('Temp')
             success = True
 	
-        print "fetch done."
+        print "Temp fetch done, errors={0}.".format(self.errors)
         if (self.dlock.acquire()):  
             self.success = success
             self.temp = temp

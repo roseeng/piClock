@@ -15,14 +15,15 @@ class TrelloCalThread(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        self.success = False
+        self.success = True
         self.events = []
+	self.errors = 0
         self.dlock = threading.Lock()
 
     def run(self):
         while True:
             self.fetchEvents()
-            time.sleep(10*30)
+            time.sleep(5*60)
 
     def getEvents(self):
         if (self.dlock.acquire(False)):  
@@ -32,17 +33,29 @@ class TrelloCalThread(Thread):
         return success, events
 
     def fetchEvents(self):
-        success = False
+        success = True
         events = []
 
-        print "fetching..."
+        print "fetching Trello..."
         try:
             req = urllib2.Request('https://trello.com/calendar/4f799cb901dd0cdb21208b60/54bbfa544dc869463114231b/caa041a9c31c013c3baa2738f0f3a4aa.ics')
-            response = urllib2.urlopen(req)
+            response = urllib2.urlopen(req, timeout=15)
             data = response.read()
     	except urllib2.URLError as ex:
+	    self.errors = self.errors + 1
             print "Vi fick ett URLError: {0} ".format(ex.reason)
+	    if self.errors > 15:
+		print "Rebooting..."
+		restart()
+	    elif self.errors > 10:
+		print "Error limit reached, next time we reboot"
+		events = [ "Prepare for reboot" ] 
+            else:
+		events = [ "Trello: " + str(ex.reason) ]
+	    success = False
+
     	else:
+	    self.errors = 0
             cal = Calendar.from_ical(data)
 	
             tm = time.localtime()
@@ -60,13 +73,20 @@ class TrelloCalThread(Thread):
                 events.append(summary)
             success = True
 
-        print "fetch done."
         if (self.dlock.acquire()):  
             self.success = success
             self.events = events
             self.dlock.release()
-        print "data saved."
 
+        print "Trello fetch done, errors: {0}.".format(self.errors)
+
+# Move this to main when everything works
+def restart():
+    command = "/usr/bin/sudo /sbin/shutdown -r now"
+    import subprocess
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    print output
 
 
 
